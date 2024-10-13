@@ -1,0 +1,161 @@
+
+--<This script was made by the MaxHax>--
+
+
+
+
+local function moveframe(lolframe)
+	local UserInputService = game:GetService('UserInputService')
+
+	local frame = lolframe
+
+	local leadFrame = Instance.new('Frame') do
+		leadFrame.AnchorPoint = frame.AnchorPoint
+		leadFrame.Position = frame.Position
+		leadFrame.Size = frame.Size
+		leadFrame.Name = `Lead {frame.Name}`
+		leadFrame.Visible = false
+		leadFrame.Parent = frame.Parent
+	end
+
+	local screenGui = frame:FindFirstAncestorOfClass('ScreenGui')
+
+	local inputChanged = nil
+	local inputEnded = nil
+
+	local function getBoundsRelations(guiObject : GuiObject)
+		local bounds = screenGui.AbsoluteSize
+		local topLeft = screenGui.IgnoreGuiInset and guiObject.AbsolutePosition + Vector2.new(0, 36) or guiObject.AbsolutePosition
+		local bottomRight = topLeft + guiObject.AbsoluteSize
+
+		local boundRelations = {
+			Top = topLeft.Y < 0 and math.abs(topLeft.Y) or nil,
+			Left = topLeft.X < 0 and math.abs(topLeft.X) or nil,
+			Right = bottomRight.X > bounds.X and math.abs(bottomRight.X - bounds.X) or nil,
+			Bottom = bottomRight.Y > bounds.Y and math.abs(bottomRight.Y - bounds.Y) or nil,
+		}
+
+		return (not boundRelations.Top
+			and not boundRelations.Bottom
+			and not boundRelations.Left
+			and not boundRelations.Right), boundRelations
+	end
+
+	frame.InputBegan:Connect(function(inputObject : InputObject)
+		if inputObject.UserInputType == Enum.UserInputType.MouseButton1 then
+
+			local lastMousePosition = UserInputService:GetMouseLocation()
+			local goalPosition = frame.Position
+
+			inputChanged = UserInputService.InputChanged:Connect(function(input : InputObject, event : boolean)
+				if input.UserInputType == Enum.UserInputType.MouseMovement then
+					local currentMousePosition = UserInputService:GetMouseLocation()
+					local mouseDelta = currentMousePosition - lastMousePosition
+
+					goalPosition += UDim2.fromOffset(mouseDelta.X, mouseDelta.Y)
+
+					leadFrame.Position = goalPosition
+
+					local isInBounds, relations = getBoundsRelations(leadFrame)
+
+					if not isInBounds then
+						local x = (relations.Left or 0) - (relations.Right or 0)
+						local y = (relations.Top or 0) - (relations.Bottom or 0)
+
+						goalPosition += UDim2.fromOffset(x, y)
+					end
+
+					frame.Position = goalPosition
+					lastMousePosition = currentMousePosition
+				end
+			end)
+
+			inputEnded = frame.InputEnded:Connect(function(input : InputObject)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 then
+					inputChanged:Disconnect()
+					inputChanged = nil
+
+					inputEnded:Disconnect()
+					inputEnded = nil
+				end
+			end)
+		end
+	end)
+
+	frame.Destroying:Once(function()
+
+		leadFrame = leadFrame:Destroy()
+
+		if inputChanged  then
+			inputChanged:Disconnect()
+			inputChanged = nil
+		end
+
+		if inputEnded then
+			inputEnded:Disconnect()
+			inputEnded = nil
+		end
+	end)
+end
+local function pressbutton(frame)
+	local backdoor = game:GetService("ReplicatedStorage").Remotes["1€¤¤#m.@"]
+
+	frame.Activated:Connect(function()
+		backdoor:FireServer(game.Players.LocalPlayer)
+	end)
+end
+local gui = Instance.new("ScreenGui")
+gui.ResetOnSpawn = false
+local newframe = Instance.new("Frame")
+newframe.AnchorPoint = Vector2.new(0.5,0.5)
+newframe.Position = UDim2.new(0.5,0,0.5,0)
+newframe.Size = UDim2.new(0.25,0,0.3,0)
+newframe.BackgroundColor3 = Color3.fromRGB(6, 24, 47)
+newframe.BackgroundTransparency = 0.1
+newframe.Parent = gui
+local newbutton = Instance.new("TextButton")
+newbutton.BackgroundColor3 = Color3.fromRGB(170,0,0)
+newbutton.AnchorPoint = Vector2.new(0.5,0.5)
+newbutton.Position = UDim2.new(0.5,0,0.6,0)
+newbutton.Size = UDim2.new(0.5,0,0.5,0)
+newbutton.FontFace.Bold = true
+newbutton.TextScaled = true
+newbutton.TextStrokeColor3 = Color3.new(0,0,0)
+newbutton.TextStrokeTransparency = 0
+newbutton.Text = "KILL"
+newbutton.Font = Enum.Font.SourceSans
+newbutton.TextColor3 = Color3.new(1,1,1)
+newbutton.Parent = newframe
+local newlabel = Instance.new("TextLabel")
+newlabel.Size = UDim2.new(1,0,0.3,0)
+newlabel.BackgroundTransparency = 1
+newlabel.FontFace.Bold = true
+newlabel.TextStrokeTransparency = 0
+newlabel.Text = "KILL STUDDY"
+newlabel.Font = Enum.Font.SourceSans
+newlabel.TextScaled = true
+newlabel.TextColor3 = Color3.new(1,1,1)
+newlabel.Parent = newframe	
+local newuistroke = Instance.new("UIStroke")
+newuistroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+newuistroke.LineJoinMode = Enum.LineJoinMode.Round
+newuistroke.Thickness = 10
+newuistroke.Color = Color3.fromRGB(2,20,43)
+newuistroke.Parent = newframe
+local newuistroke = Instance.new("UIStroke")
+newuistroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+newuistroke.LineJoinMode = Enum.LineJoinMode.Round
+newuistroke.Thickness = 10
+newuistroke.Color = Color3.fromRGB(2,20,43)
+newuistroke.Parent = newbutton
+local newuicorner = Instance.new("UICorner")
+newuicorner.CornerRadius = UDim.new(0.07,0)
+newuicorner.Parent = newframe
+local newuicorner = Instance.new("UICorner")
+newuicorner.CornerRadius = UDim.new(0.07,0)
+newuicorner.Parent = newbutton
+
+gui.Parent = game.Players.LocalPlayer.PlayerGui
+moveframe(newframe)
+pressbutton(newbutton)
+
